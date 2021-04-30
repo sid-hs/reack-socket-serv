@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniChat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+</head>
+<body class="container">
+    <h1 class="mt-5"> Mini Chat</h1>
+    <hr>
+    <form id="miFormulario">
+        <div class="row">
+            <div class="col-8">
+                <input type="text" id="txtMensaje" placeholder="mensaje aqui" class="form-control">
+
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">
+                Enviar
+                </button>
+            </div>
+            
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col">
+            <ul id="misMensajes" class="mt-2">                         
+            </ul>
+        </div>
+    </div>
+
+
+
+
+<!-- este script se copia desde la pagina https://cdnjs.com/libraries/socket.io-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<!-- se coloca el escript para solicitar conección
+Si el server esta ya dezplegado en la web se tiene que colocar la dirección-->
+   <!--<script>
+        io('http://localhost:3000'); 
+    </script> -->
+    <script>
+        const socket = io('http://localhost:3030'); 
+        //Referenaicas al DOM 
+        const formulario = document.querySelector('#miFormulario');
+        const mensajes = document.querySelector('#misMensajes');
+        const txtMensaje = document.querySelector('#txtMensaje');
+
+        formulario.addEventListener( 'submit', (ev) => {  //esta a la escucha de que suceda el submit
+            ev.preventDefault(); //previene el refresh de la pagina web al presionar el boton
+            //extraer el mensaje de la caja de input
+            const nuevoMensaje = txtMensaje.value;
+            //para revisar que este funcionando            console.log(nuevoMensaje);    
+            socket.emit('mensaje-to-server', { texto: nuevoMensaje } );
+        });
+
+        socket.on('mensaje-from-server',( data ) =>{
+            console.log(data);
+
+            mensajes.innerHTML += `<li>${data.texto}</li>`;
+
+        });
+
+        /*
+        socket.on('mensaje-bienvenida', ( data ) => {
+            console.log( data );
+  //Se comentan estas líneas cuyo proposito fue hacer referencia a lo que es posible hacer
+            setTimeout( () => {
+                console.log('Genial'),
+                
+                socket.emit('mensaje-cliente', {msg: 'He llegado!', nombre: 'Sid'
+        } );         
+
+            }, 2000 );
+
+        })
+*/
+        //emitir un evento,  mensaje - cliente, // { msg: 'cliente', nombre: 'Sid'}
+      
+        
+    </script> <!-- esta es la configuración de escucha, socket porque es el nombre de cliente generico en nuestro archivo servidor (index.js)
+    y el mensaje bienvenida es el nombre que se le dió, así que la data es la información a desplegar -->
+    <!-- ON es para escuchar, emit es para emitir-->
+</body>
+</html>
